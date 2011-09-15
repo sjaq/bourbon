@@ -1,4 +1,42 @@
 // Background image property for support with adding multiple background images with a gradients.
+@function render-gradients($gradients, $vendor: false) {
+  @if $count == 1 {
+    $vendor-gradients: false;
+    @if $vendor {
+      $vendor-gradients: -#{$vendor}-linear-gradient($gradients);
+    }
+    @else if $vendor == false {
+      $vendor-gradients: "linear-gradient(#{$gradients})";
+      $vendor-gradients: unquote($vendor-gradients);
+    }
+    @return $vendor-gradients;
+  }
+
+  @else if $count >= 2 {
+    $vendor-gradients: false;
+    @for $i from 1 through length($gradients) {
+      @if $vendor {
+        @if $vendor-gradients == false {
+          $vendor-gradients: -#{$vendor}-linear-gradient(nth($gradients, $i));
+        }
+        @else {
+          $vendor-gradients: $vendor-gradients, -#{$vendor}-linear-gradient(nth($gradients, $i));
+        }
+      }
+      @else if $vendor == false {
+        @if $vendor-gradients {
+          $vendor-gradients: "linear-gradient(#{nth($gradients, $i)})";
+          $vendor-gradients: unquote($vendor-gradients);
+        }
+        @else {
+          $vendor-gradients: $vendor-gradients, "linear-gradient( #{nth($gradients, $i)} )";
+          $vendor-gradients: unquote($vendor-gradients);
+        }
+      }
+    }
+    @return $vendor-gradients;
+  }
+}
 
 @mixin background-image(
   $image-1       , $image-2: false,
@@ -49,46 +87,6 @@
       }
     }
   }
-
-  @function render-gradients($gradients, $vendor: false) {
-    @if $count == 1 {
-      $vendor-gradients: false;
-      @if $vendor {
-        $vendor-gradients: -#{$vendor}-linear-gradient($gradients);
-      }
-      @else if $vendor == false {
-        $vendor-gradients: "linear-gradient(#{$gradients})";
-        $vendor-gradients: unquote($vendor-gradients);
-      }
-      @return $vendor-gradients;
-    }
-
-    @else if $count >= 2 {
-      $vendor-gradients: false;
-      @for $i from 1 through length($gradients) {
-        @if $vendor {
-          @if $vendor-gradients == false {
-            $vendor-gradients: -#{$vendor}-linear-gradient(nth($gradients, $i));
-          }
-          @else {
-            $vendor-gradients: $vendor-gradients, -#{$vendor}-linear-gradient(nth($gradients, $i));
-          }
-        }
-        @else if $vendor == false {
-          @if $vendor-gradients {
-            $vendor-gradients: "linear-gradient(#{nth($gradients, $i)})";
-            $vendor-gradients: unquote($vendor-gradients);
-          }
-          @else {
-            $vendor-gradients: $vendor-gradients, "linear-gradient( #{nth($gradients, $i)} )";
-            $vendor-gradients: unquote($vendor-gradients);
-          }
-        }
-      }
-      @return $vendor-gradients;
-    }
-  }
-
 
   @if $assets {
     @if $count >= 1 {
